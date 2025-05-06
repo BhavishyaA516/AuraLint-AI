@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Documentation - Auralint</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --accent-color: #00ff9d; --accent-glow: rgba(0, 255, 157, 0.5); --accent-glow-strong: rgba(0, 255, 157, 0.7);
+      --bg-primary: #010314; --bg-secondary: rgba(1, 3, 20, 0.95); --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.7);
+      --card-bg: rgba(0, 255, 157, 0.03); --border-color: rgba(0, 255, 157, 0.2);
+    }
+    [data-theme="light"] {
+      --accent-color: #e91e63; --accent-glow: rgba(233, 30, 99, 0.5); --accent-glow-strong: rgba(233, 30, 99, 0.7);
+      --bg-primary: #f5f5f5; --bg-secondary: rgba(245, 245, 245, 0.95); --text-primary: #333333; --text-secondary: rgba(51, 51, 51, 0.7);
+      --card-bg: rgba(255, 255, 255, 0.9); --border-color: rgba(233, 30, 99, 0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary);
+      min-height: 100vh; display: flex; flex-direction: column; line-height: 1.6;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .header {
+      position: fixed; width: 100%; z-index: 1000; background: var(--bg-secondary); backdrop-filter: blur(10px);
+      padding: 0; border-bottom: 1px solid var(--border-color);
+    }
+    .header-top {
+      padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: relative;
+    }
+    .logo-container { display: flex; align-items: center; gap: 1.2rem; }
+    .logo-text {
+      font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 600; color: var(--accent-color);
+      text-shadow: 0 0 10px var(--accent-glow); letter-spacing: 2px;
+    }
+    .header-actions { display: flex; align-items: center; gap: 1.5rem; }
+    .theme-toggle {
+      background: none; border: 1px solid var(--border-color); border-radius: 50%; width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center; color: var(--accent-color); cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .theme-toggle:hover { background: var(--card-bg); }
+    .theme-toggle i { font-size: 1.1rem; z-index: 1; }
+    .navbar {
+      display: flex; gap: 1rem; padding: 0.5rem 2rem; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+      position: fixed; top: 60px; width: 100%; z-index: 999;
+    }
+    .navbar a {
+      color: var(--text-secondary); text-decoration: none; padding: 0.5rem 1rem; border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+    .navbar a:hover, .navbar a.active {
+      color: var(--accent-color); background: rgba(0, 255, 157, 0.1); text-shadow: 0 0 8px var(--accent-glow);
+    }
+    [data-theme="light"] .navbar a:hover, [data-theme="light"] .navbar a.active {
+      background: rgba(233, 30, 99, 0.1);
+    }
+    .main-content { flex: 1; max-width: 1400px; margin: 0 auto; width: 100%; padding: 8rem 2rem 2rem; }
+    .code-card {
+      background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 20px; padding: 3rem;
+      backdrop-filter: blur(15px); box-shadow: 0 8px 32px rgba(0, 255, 157, 0.1); position: relative; overflow: hidden;
+    }
+    .code-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+    }
+    .toolbar { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }
+    .left-tools, .right-tools { display: flex; gap: 0.75rem; }
+    .language-section { margin-bottom: 0; }
+    .language-label {
+      display: block; margin-bottom: 0.5rem; color: var(--accent-color); font-size: 1.1rem; font-weight: 500;
+      letter-spacing: 1px; text-shadow: var(--accent-glow);
+    }
+    .language-select {
+      padding: 0.5rem 1rem; border: 1px solid var(--border-color); border-radius: 10px;
+      font-size: 1rem; color: var(--text-primary); background: var(--bg-secondary);
+      cursor: pointer; transition: all 0.3s ease; appearance: none;
+    }
+    .language-select option {
+      color: #ffffff;
+      background: var(--bg-primary);
+    }
+    .language-select:focus { outline: none; box-shadow: 0 0 20px var(--accent-glow); }
+    .language-select:hover { background: var(--card-bg); }
+    .editor { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+    .code-area, .output-code {
+      width: 50%; min-height: 350px; padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 10px;
+      font-family: 'Inter', monospace; font-size: 1rem; line-height: 1.6; background: var(--bg-secondary);
+      color: var(--text-primary); transition: all 0.3s ease; resize: vertical;
+    }
+    .analysis-area {
+      width: 100%; min-height: 200px; padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 10px;
+      font-family: 'Inter', monospace; font-size: 1rem; line-height: 1.6; background: var(--bg-secondary);
+      color: var(--text-primary); transition: all 0.3s ease; resize: vertical;
+    }
+    .code-area:focus, .output-code:focus, .analysis-area:focus { outline: none; box-shadow: 0 0 20px var(--accent-glow); }
+    .button {
+      padding: 0.5rem 1rem; border: 1px solid var(--border-color); border-radius: 10px;
+      background: var(--card-bg); color: var(--accent-color); font-size: 1.1rem; font-weight: 500;
+      cursor: pointer; transition: all 0.3s ease; letter-spacing: 1px; text-shadow: var(--accent-glow);
+    }
+    .button:hover { background: var(--card-bg); box-shadow: 0 0 20px var(--accent-glow); }
+    a { color: var(--accent-color); text-decoration: none; }
+    a:hover { text-shadow: 0 0 8px var(--accent-glow); }
+    @media (max-width: 768px) {
+      .editor { flex-direction: column; }
+      .code-area, .output-code { width: 100%; }
+      .toolbar { flex-direction: column; gap: 1rem; }
+      .navbar { flex-direction: column; padding: 0.5rem 1rem; top: 50px; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <header class="header">
+    <div class="header-top">
+      <div class="logo-container">
+        <span class="logo-text">Auralint</span>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="navbar">
+    <a href="/" class="home-link">Home</a>
+    <a href="/fix-errors">Code Error Fixer</a>
+    <a href="/optimize">Code Optimizer</a>
+    <a href="/check-plagiarism">Code Plagiarism Checker</a>
+    <a href="/document" class="active">Code Documentation</a>
+  </nav>
+
+  <main class="main-content">
+    <div class="code-card">
+      <h2>Code Documentation</h2>
+      <form id="documentForm" method="POST">
+        <div class="toolbar">
+          <div class="left-tools">
+            <button class="button" type="submit">Generate Documentation</button>
+            <button class="button" type="submit" name="download" value="pdf">Download PDF</button>
+          </div>
+          <div class="right-tools">
+            <div class="language-section">
+              <label class="language-label">Select Language:</label>
+              <select class="language-select" name="language">
+                <option value="Python" {% if language == 'Python' %}selected{% endif %}>Python</option>
+                <option value="Java" {% if language == 'Java' %}selected{% endif %}>Java</option>
+                <option value="C" {% if language == 'C' %}selected{% endif %}>C</option>
+              </select>
+            </div>
+            <button class="button" type="button" onclick="pasteText()">Paste</button>
+            <button class="button" type="button" onclick="copyText('code')">Copy Input</button>
+            <button class="button" type="button" onclick="copyText('outputCode')">Copy Output</button>
+            <button class="button" type="button" onclick="downloadCode()">Download Code</button>
+          </div>
+        </div>
+        <div class="editor">
+          <textarea class="code-area" name="code" id="code" placeholder="Paste your code here">{{ code | safe }}</textarea>
+          <textarea class="output-code" id="outputCode" readonly>{% if result %}{{ result }}{% else %}Documentation preview will appear here...{% endif %}</textarea>
+        </div>
+        <textarea class="analysis-area" readonly>{% if result %}Documentation generated successfully. Click 'Download PDF' to save.{% else %}Analysis will appear here...{% endif %}</textarea>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    function toggleTheme() {
+      const body = document.body;
+      const currentTheme = body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      body.setAttribute('data-theme', newTheme);
+      const icon = document.querySelector('.theme-toggle i');
+      if (newTheme === 'dark') {
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+      } else {
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+      }
+      localStorage.setItem('theme', newTheme);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.body.setAttribute('data-theme', savedTheme);
+      const icon = document.querySelector('.theme-toggle i');
+      if (savedTheme === 'dark') {
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+      } else {
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+      }
+    });
+
+    function copyText(elementId) {
+      const element = document.getElementById(elementId);
+      element.select();
+      document.execCommand('copy');
+      alert(elementId === 'code' ? 'Input code copied to clipboard!' : 'Output documentation copied to clipboard!');
+    }
+
+    function pasteText() {
+      navigator.clipboard.readText().then(text => {
+        document.getElementById('code').value = text;
+      });
+    }
+
+    function downloadCode() {
+      const code = document.getElementById('outputCode').value;
+      const language = document.querySelector('.language-select').value;
+      const extension = language === 'Python' ? '.py' : language === 'Java' ? '.java' : '.c';
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `output${extension}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

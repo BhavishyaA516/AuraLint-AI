@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auralint</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --accent-color: #00ff9d; --accent-glow: rgba(0, 255, 157, 0.5); --accent-glow-strong: rgba(0, 255, 157, 0.7);
+      --bg-primary: #010314; --bg-secondary: rgba(1, 3, 20, 0.95); --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.7);
+      --card-bg: rgba(0, 255, 157, 0.03); --border-color: rgba(0, 255, 157, 0.2);
+    }
+    [data-theme="light"] {
+      --accent-color: #e91e63; --accent-glow: rgba(233, 30, 99, 0.5); --accent-glow-strong: rgba(233, 30, 99, 0.7);
+      --bg-primary: #f5f5f5; --bg-secondary: rgba(245, 245, 245, 0.95); --text-primary: #333333; --text-secondary: rgba(51, 51, 51, 0.7);
+      --card-bg: rgba(255, 255, 255, 0.9); --border-color: rgba(233, 30, 99, 0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary);
+      min-height: 100vh; display: flex; flex-direction: column; line-height: 1.6;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .header {
+      position: fixed; width: 100%; z-index: 1000; background: var(--bg-secondary); backdrop-filter: blur(10px);
+      padding: 0; border-bottom: 1px solid var(--border-color);
+    }
+    .header-top {
+      padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: relative;
+    }
+    .header-top::after {
+      content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--border-color) 25%, var(--accent-color) 50%, var(--border-color) 75%, transparent 100%);
+    }
+    .logo-container { display: flex; align-items: center; gap: 1.2rem; }
+    .logo-svg { width: 38px; height: 38px; position: relative; }
+    .logo-svg::before {
+      content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%); border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.2); opacity: 0.2; }
+      100% { transform: scale(1); opacity: 0.5; }
+    }
+    .logo-text {
+      font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 600; color: var(--accent-color);
+      text-shadow: 0 0 10px var(--accent-glow); letter-spacing: 2px;
+    }
+    .header-actions { display: flex; align-items: center; gap: 1.5rem; }
+    .theme-toggle {
+      background: none; border: 1px solid var(--border-color); border-radius: 50%; width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center; color: var(--accent-color); cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .theme-toggle:hover { background: var(--card-bg); }
+    .theme-toggle i { font-size: 1.1rem; z-index: 1; }
+    .hero {
+      padding: 10rem 2rem 6rem; text-align: center; background: linear-gradient(180deg, rgba(0, 255, 157, 0.15) 0%, rgba(0, 255, 157, 0) 100%);
+      position: relative; overflow: hidden;
+    }
+    [data-theme="light"] .hero { background: linear-gradient(180deg, rgba(233, 30, 99, 0.15) 0%, rgba(233, 30, 99, 0) 100%); }
+    .hero-title {
+      font-size: 4rem; font-weight: 700; margin-bottom: 2rem; line-height: 1.2; color: var(--accent-color);
+      text-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow); animation: titlePulse 3s infinite;
+    }
+    @keyframes titlePulse {
+      0%, 100% { text-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow); }
+      50% { text-shadow: 0 0 30px var(--accent-glow-strong), 0 0 60px var(--accent-glow); }
+    }
+    .hero-subtitle {
+      font-size: 1.3rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto 3rem; font-weight: 400;
+    }
+    .main-content { flex: 1; max-width: 1400px; margin: 0 auto; width: 100%; padding: 2rem; position: relative; }
+    .code-card {
+      background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 20px; padding: 3rem;
+      backdrop-filter: blur(15px); box-shadow: 0 8px 32px rgba(0, 255, 157, 0.1); position: relative; overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .code-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+    }
+    .toolbar { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }
+    .left-tools, .right-tools { display: flex; gap: 0.75rem; }
+    .language-section { margin-bottom: 0; }
+    .language-label {
+      display: block; margin-bottom: 0.5rem; color: var(--accent-color); font-size: 1.1rem; font-weight: 500;
+      letter-spacing: 1px; text-shadow: var(--accent-glow);
+    }
+    .language-select {
+      padding: 0.5rem 1rem; border: 1px solid var(--border-color); border-radius: 10px;
+      font-size: 1rem; color: var(--text-primary); background: var(--card-bg); cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .language-select:focus { outline: none; box-shadow: 0 0 20px var(--accent-glow); }
+    .editor { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+    .code-area, .output {
+      width: 50%; min-height: 350px; padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 10px;
+      font-family: 'Inter', monospace; font-size: 1rem; line-height: 1.6; background: var(--bg-secondary);
+      color: var(--text-primary); transition: all 0.3s ease;
+    }
+    .code-area { resize: vertical; }
+    .output { overflow-y: auto; }
+    .code-area:focus, .output:focus { outline: none; box-shadow: 0 0 20px var(--accent-glow); }
+    .button {
+      padding: 0.5rem 1rem; border: 1px solid var(--border-color); border-radius: 10px;
+      background: var(--card-bg); color: var(--accent-color); font-size: 1.1rem; font-weight: 500;
+      cursor: pointer; transition: all 0.3s ease; letter-spacing: 1px; text-shadow: var(--accent-glow); text-decoration: none;
+    }
+    .button:hover { background: var(--card-bg); box-shadow: 0 0 20px var(--accent-glow); }
+    .benefits-container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .benefits-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;
+    }
+    .benefit-card {
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 15px; padding: 2rem;
+      text-align: center; transition: all 0.3s ease; position: relative; overflow: hidden;
+    }
+    .benefit-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+      transform: translateX(-100%); transition: transform 0.5s ease;
+    }
+    .benefit-card:hover::before { transform: translateX(100%); }
+    .benefit-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0, 255, 157, 0.1); }
+    .benefit-icon {
+      font-size: 2.5rem; color: var(--accent-color); margin-bottom: 1.5rem; filter: drop-shadow(0 0 10px var(--accent-glow));
+    }
+    .benefit-card h3 { color: var(--accent-color); font-size: 1.4rem; margin-bottom: 1rem; font-weight: 600; }
+    .benefit-card p { color: var(--text-secondary); font-size: 1rem; line-height: 1.6; }
+    .content-section {
+      background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 20px; padding: 2rem;
+      margin-bottom: 2rem; box-shadow: 0 8px 32px rgba(0, 255, 157, 0.1); position: relative;
+    }
+    .content-section h2 { color: var(--accent-color); margin-bottom: 1rem; text-shadow: 0 0 10px var(--accent-glow); }
+    .content-section p, .content-section ul, .content-section ol { color: var(--text-secondary); margin-bottom: 1rem; }
+    .content-section ul, .content-section ol { padding-left: 1.5rem; }
+    .content-section li { margin-bottom: 0.5rem; }
+    .footer {
+      background: var(--bg-secondary); border-top: 1px solid var(--border-color); padding: 4rem 2rem 2rem; position: relative; overflow: hidden;
+    }
+    .footer::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--accent-color) 50%, transparent 100%);
+      filter: blur(1px);
+    }
+    .footer-content { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+    .footer-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-bottom: 3rem;
+    }
+    .footer-section { padding: 1rem; border-radius: 12px; transition: all 0.3s ease; }
+    .footer-section:hover { background: rgba(0, 255, 157, 0.03); transform: translateY(-5px); }
+    .footer-section h3 {
+      color: var(--accent-color); font-size: 1.2rem; font-weight: 500; margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.5rem; text-shadow: 0 0 10px var(--accent-glow);
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+    .footer-links a {
+      color: var(--text-secondary); text-decoration: none; display: flex; align-items: center; gap: 0.8rem;
+      transition: all 0.3s ease; padding: 0.5rem; border-radius: 6px;
+    }
+    .footer-links a i { color: var(--accent-color); font-size: 1.1rem; transition: all 0.3s ease; }
+    .footer-links a:hover { color: var(--accent-color); background: rgba(0, 255, 157, 0.05); transform: translateX(8px); }
+    .footer-links a:hover i { transform: scale(1.2); }
+    .social-links { display: flex; gap: 1.5rem; margin-top: 1rem; }
+    .social-link {
+      color: var(--text-secondary); font-size: 1.8rem; transition: all 0.3s ease; position: relative;
+    }
+    .social-link::before {
+      content: ''; position: absolute; inset: -8px; border-radius: 50%; background: var(--accent-glow);
+      opacity: 0; transition: all 0.3s ease;
+    }
+    .social-link:hover { color: var(--accent-color); transform: translateY(-5px); }
+    .social-link:hover::before { opacity: 0.2; }
+    .footer-bottom { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(0, 255, 157, 0.1); text-align: center; position: relative; }
+    .footer-bottom::before {
+      content: ''; position: absolute; top: -1px; left: 50%; transform: translateX(-50%); width: 200px; height: 1px;
+      background: var(--accent-color); filter: blur(1px);
+    }
+    .footer-bottom p { color: var(--text-secondary); font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .footer-bottom i.fa-heart { color: var(--accent-color); font-size: 1rem; animation: pulse 1.5s infinite; }
+    @media (max-width: 768px) {
+      .hero { padding: 6rem 1rem 3rem; }
+      .hero-title { font-size: 2.5rem; }
+      .main-content { padding: 1rem; }
+      .header-top { padding: 0.5rem 1rem; }
+      .code-card { padding: 1.5rem; }
+      .footer { padding: 3rem 1rem 1.5rem; }
+      .footer-grid { gap: 2rem; }
+      .footer-section { padding: 0.8rem; }
+      .social-links { justify-content: center; }
+      .benefits-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+      .benefit-card { padding: 1.5rem; }
+      .editor { flex-direction: column; }
+      .code-area, .output { width: 100%; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <header class="header">
+    <div class="header-top">
+      <div class="logo-container">
+        <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:#0f6544;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#06603d;stop-opacity:0.7" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <circle cx="50" cy="50" r="35" fill="none" stroke="url(#grad1)" stroke-width="4" stroke-dasharray="6" filter="url(#glow)"/>
+          <path d="M35 45 L50 60 L65 45" stroke="#00ff9d" stroke-width="4" fill="none" filter="url(#glow)"/>
+        </svg>
+        <span class="logo-text">Auralint</span>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="benefits-container">
+      <h1 class="hero-title">Say Hello to Optimized Code, Reduced Complexity, and Goodbye to Bugs</h1>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <i class="fas fa-bolt benefit-icon"></i>
+          <h3>Instant Analysis</h3>
+          <p>Get immediate feedback on your code quality, style, and potential issues</p>
+        </div>
+        <div class="benefit-card">
+          <i class="fas fa-bug benefit-icon"></i>
+          <h3>Bug Detection</h3>
+          <p>Identify and fix potential bugs before they reach production</p>
+        </div>
+        <div class="benefit-card">
+          <i class="fas fa-code benefit-icon"></i>
+          <h3>Code Optimization</h3>
+          <p>Receive suggestions to improve code performance and readability</p>
+        </div>
+        <div class="benefit-card">
+          <i class="fas fa-file-alt benefit-icon"></i>
+          <h3>Code Documentation</h3>
+          <p>Generate detailed, professional documentation with problem statements and examples</p>
+        </div>
+        <div class="benefit-card">
+          <i class="fas fa-clock benefit-icon"></i>
+          <h3>Time Saving</h3>
+          <p>Reduce code review time by up to 80% with AI-powered analysis</p>
+        </div>
+        <div class="benefit-card">
+          <i class="fas fa-graduation-cap benefit-icon"></i>
+          <h3>Learning Tool</h3>
+          <p>Learn best practices and improve your coding skills with AI guidance</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="main-content">
+    <div class="code-card">
+      <h2>Quick Access</h2>
+      <a href="/fix-errors" class="button">Code Error Fixer</a>
+      <a href="/optimize" class="button">Code Optimizer</a>
+      <a href="/check-plagiarism" class="button">Code Plagiarism Checker</a>
+      <a href="/document" class="button">Code Documentation</a>
+    </div>
+
+    <div class="code-card">
+      <div class="toolbar">
+        <div class="left-tools">
+          <button class="button" onclick="submitForm('/fix-errors')">Fix Errors</button>
+          <button class="button" onclick="submitForm('/optimize')">Optimize Code</button>
+          <button class="button" onclick="submitForm('/check-plagiarism')">Check Plagiarism</button>
+          <button class="button" onclick="submitForm('/document')">Document Code</button>
+        </div>
+        <div class="right-tools">
+          <div class="language-section">
+            <select class="language-select" id="language">
+              <option value="Python">Python</option>
+              <option value="Java">Java</option>
+              <option value="C">C</option>
+            </select>
+          </div>
+          <button class="button" onclick="pasteText()">Paste</button>
+          <button class="button" onclick="copyText()">Copy</button>
+        </div>
+      </div>
+      <div class="editor">
+        <textarea class="code-area" id="code" placeholder="Paste or type your code here..."></textarea>
+        <div class="output" id="outputArea">Output will appear here...</div>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <h2>Say Goodbye to Tedious Reviews—AI Just Made Coding Smoother</h2>
+      <p>Tired of spending hours reviewing code line by line? Now you don’t have to. With AI-powered code review, you can instantly catch bugs, improve readability, generate professional documentation, and boost quality—all without lifting a finger.</p>
+      <p>This tool doesn’t just scan your code; it understands it. It checks for logic errors, style issues, and suggests smarter ways to write your functions. It also creates detailed documentation, making your code easy to share and maintain. It's like having a super-fast, super-sharp teammate who's always focused, never tired, and always ready to help.</p>
+      <p>The result? Cleaner code, faster development, and fewer headaches. Whether you're building a solo project or managing a full dev team, AI code review keeps your workflow smooth and your code top-notch.</p>
+    </div>
+
+    <div class="content-section">
+      <h2>How to Review Your Code Smarter with AI Code Reviewer Tool</h2>
+      <p>Unlock the full potential of your development process with our AI Code Reviewer—a smart, efficient solution that transforms the way you review and document code. With just a few easy steps, you can identify bugs, clean up syntax, optimize performance, or generate comprehensive documentation in seconds.</p>
+      <p><strong>Here’s how you can use our AI-powered Code Review Tool to streamline your workflow:</strong></p>
+      <ol>
+        <li><strong>Paste Your Code:</strong> Copy and paste your code into the editor on the left side of the screen.</li>
+        <li><strong>Choose Review Mode:</strong> Select from options like Bug Detection, Code Simplification, Optimization, Documentation, or Best Practices Check.</li>
+        <li><strong>Set Goals:</strong> Define your review goals—whether it’s improving performance, ensuring readability, generating documentation, or enforcing team standards.</li>
+        <li><strong>Click ‘Review’:</strong> Let the AI analyze your code, highlight suggestions, or produce a detailed documentation report.</li>
+        <li><strong>Review and Apply Fixes:</strong> Go through the AI feedback or documentation, apply suggestions, or download the documentation as a PDF.</li>
+        <li><strong>Copy & Export:</strong> Once you're happy with the reviewed code or documentation, copy or export it for immediate use in your project.</li>
+      </ol>
+      <p>In just a few clicks, you can combine AI efficiency with professional-grade code insights and documentation. Boost team productivity, reduce technical debt, and write cleaner, smarter, well-documented code with our AI Code Reviewer. It supports multiple programming languages and integrates seamlessly into your workflow.</p>
+    </div>
+
+    <div class="content-section">
+      <h2>What are the key benefits of using an AI Code Reviewer?</h2>
+      <p>The AI Code Reviewer offers many helpful benefits. Below are some of the key reasons why developers and teams love using it:</p>
+      <ul>
+        <li><strong>Faster Reviews:</strong> It quickly checks your code, saving time and letting you focus on writing, not debugging.</li>
+        <li><strong>Fewer Bugs:</strong> It spots mistakes early, helping you fix problems before they become bigger issues.</li>
+        <li><strong>Cleaner Code:</strong> It gives suggestions to improve your code’s structure, making it easier to read and maintain.</li>
+        <li><strong>Professional Documentation:</strong> It generates detailed documentation with problem statements, algorithms, and examples, perfect for sharing or archiving.</li>
+        <li><strong>Better Collaboration:</strong> It keeps code style, quality, and documentation consistent across the whole team.</li>
+        <li><strong>Saves Developer Time:</strong> The AI handles repetitive tasks like bug checking and documentation, freeing you up to focus on building features.</li>
+        <li><strong>Smart Suggestions:</strong> It understands your code and offers tips, not just errors—like a helpful teammate.</li>
+        <li><strong>Works at Scale:</strong> Whether you're a solo developer or a big team, the AI can handle any amount of code and documentation needs.</li>
+      </ul>
+      <p>The AI Code Reviewer is a powerful tool that helps speed up development, improve code quality, and make the whole process smoother and smarter for everyone.</p>
+    </div>
+
+    <div class="content-section">
+      <h2>AI Code Fixer: Your Smart Coding Assistant</h2>
+      <p>An AI Code Fixer is a game-changing feature in code review tools. Unlike traditional tools that simply highlight errors, this one takes action—it analyzes your code and suggests or applies fixes on the spot.</p>
+      <p>From fixing syntax mistakes and removing unused variables to optimizing inefficient code, the Code Fixer uses AI to recommend clean, high-performing solutions instantly. It's designed to improve readability, enforce coding standards, and keep your codebase efficient.</p>
+      <p>Not just for beginners, this tool is a productivity booster for pros too. By reducing repetitive edits and catching issues early, the AI Code Fixer helps you code faster, smarter, and cleaner—so you can focus on what matters most: building great software.</p>
+    </div>
+
+    <div class="content-section">
+      <h2>Optimized Code: Smarter Performance with AI</h2>
+      <p>Optimized code is at the heart of efficient software—and AI-based code review tools make it easier than ever to achieve. Instead of manually tweaking every line, these tools analyze your code for performance bottlenecks and recommend smarter, faster alternatives.</p>
+      <p>Whether it’s reducing redundant loops, improving memory usage, or streamlining logic, AI reviews your code through the lens of speed and efficiency. It ensures that your code not only works—but works at its best.</p>
+      <p>For developers aiming to build scalable, high-performing applications, optimized code suggestions from AI are a true time-saver. With AI in your toolkit, writing clean, efficient, and production-ready code becomes faster, easier, and more reliable.</p>
+    </div>
+
+    <div class="content-section">
+      <h2>Plagiarism Detection: Ensuring Originality with AI</h2>
+      <p>Plagiarism in code—whether intentional or accidental—can lead to serious legal and ethical issues. AI-based code review tools help prevent this by scanning your code against vast databases to detect similarities with publicly available or pre-existing code.</p>
+      <p>These tools don’t just flag copied snippets—they provide detailed insights into where the code might have originated and how similar it is. This helps you maintain originality, avoid intellectual property violations, and uphold academic or professional integrity.</p>
+      <p>Whether you're working on open-source contributions, academic projects, or commercial software, AI-driven plagiarism detection ensures your code is authentic, trustworthy, and compliant with best practices.</p>
+    </div>
+
+    <div class="content-section">
+      <h2>Code Documentation: Clear and Professional</h2>
+      <p>Good documentation is key to maintainable code. Our AI-powered Code Documentation feature generates detailed, professional documentation for your code, including problem statements, input/output formats, constraints, algorithms, commented code, and examples.</p>
+      <p>Simply paste your code, and the AI will create a downloadable PDF that’s perfect for sharing with teams, submitting assignments, or keeping your projects well-documented. It supports Python, Java, and C, analyzing your code to produce clear explanations of its purpose, logic, and usage.</p>
+      <p>Whether you're a developer documenting a complex algorithm or a student submitting a project, this feature saves time and ensures your code is easy to understand, maintain, and share with others.</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-grid">
+        <div class="footer-section">
+          <h3>Company</h3>
+          <ul class="footer-links">
+            <li><a href="#" class="hover-effect"><i class="fas fa-info-circle"></i>About</a></li>
+            <li><a href="#" class="hover-effect"><i class="fas fa-users"></i>Team</a></li>
+            <li><a href="#" class="hover-effect"><i class="fas fa-newspaper"></i>Blog</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Product</h3>
+          <ul class="footer-links">
+            <li><a href="#" class="hover-effect"><i class="fas fa-book"></i>Documentation</a></li>
+            <li><a href="#" class="hover-effect"><i class="fas fa-graduation-cap"></i>Tutorials</a></li>
+            <li><a href="#" class="hover-effect"><i class="fas fa-question-circle"></i>FAQ</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Legal</h3>
+          <ul class="footer-links">
+            <li><a href="#" class="hover-effect"><i class="fas fa-shield-alt"></i>Privacy Policy</a></li>
+            <li><a href="#" class="hover-effect"><i class="fas fa-gavel"></i>Terms of Service</a></li>
+            <li><a href="#" class="hover-effect"><i class="fas fa-cookie"></i>Cookie Policy</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Connect With Us</h3>
+          <div class="social-links">
+            <a href="#" class="social-link" title="GitHub"><i class="fab fa-github"></i></a>
+            <a href="#" class="social-link" title="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-link" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="#" class="social-link" title="Discord"><i class="fab fa-discord"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Auralint. All rights reserved. | Made with <i class="fas fa-heart"></i> by <a href="#">Auralint Team</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const body = document.body;
+      const currentTheme = body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      body.setAttribute('data-theme', newTheme);
+      const icon = document.querySelector('.theme-toggle i');
+      if (newTheme === 'dark') {
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+      } else {
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+      }
+      localStorage.setItem('theme', newTheme);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.body.setAttribute('data-theme', savedTheme);
+      const icon = document.querySelector('.theme-toggle i');
+      if (savedTheme === 'dark') {
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+      } else {
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+      }
+    });
+
+    function submitForm(action) {
+      let language = document.getElementById('language').value;
+      const code = document.getElementById('code').value;
+      if (action === '/check-plagiarism') {
+        language = language.toLowerCase(); // Convert to lowercase for plagiarism checker
+      }
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = action;
+      const langInput = document.createElement('input');
+      langInput.type = 'hidden';
+      langInput.name = 'language';
+      langInput.value = language;
+      const codeInput = document.createElement('input');
+      codeInput.type = 'hidden';
+      codeInput.name = 'code';
+      codeInput.value = code;
+      form.appendChild(langInput);
+      form.appendChild(codeInput);
+      document.body.appendChild(form);
+      form.submit();
+    }
+
+    function copyText() {
+      const code = document.getElementById('code');
+      code.select();
+      document.execCommand('copy');
+      alert('Code copied to clipboard!');
+    }
+
+    function pasteText() {
+      navigator.clipboard.readText().then(text => {
+        document.getElementById('code').value = text;
+      });
+    }
+  </script>
+</body>
+</html>
