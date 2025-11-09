@@ -8,7 +8,7 @@ The application combines a modern, responsive frontend with a robust Flask backe
 
 The project automates repetitive code review tasks, ensuring developers can:
 
- # 1.1 Detect and fix errors in code.
+# 1.1 Detect and fix errors in code.
 # 1.2 Optimize code for performance and readability.
 # 1.3 Check for plagiarism and generate unique alternatives.
 # 1.4 Produce professional documentation with downloadable PDFs.
