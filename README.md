@@ -70,6 +70,15 @@ Git: For cloning the repository.
 pip: Python package manager.
 Google Gemini API key: Obtain from Google AI Studio.
 
+# Application Output
+**1**
+
+![image](https://github.com/BhavishyaA516/AuraLint-AI/blob/6a152c6ddd1e28de09898e16f6e5a369fad8b045/AuraLint1.png)
+
+**2**
+
+![image](https://github.com/BhavishyaA516/AuraLint-AI/blob/1dafe89edaa06e7dfe3f299bfc08021f2635f83d/AuraLint1.png)
+
 # 6 Setup Instruction
 Follow these steps to set up and run the project locally:
 
@@ -199,11 +208,3 @@ This project is licensed under the MIT License:
 - The project comes with no warranties, and contributors are not liable for issues arising from its use.
 - Check the full MIT License text for details if redistributing the project.
 
-**Application Output**
-**1**
-
-![image](https://github.com/BhavishyaA516/AuraLint-AI/blob/6a152c6ddd1e28de09898e16f6e5a369fad8b045/AuraLint1.png)
-
-**2**
-
-![image](https://github.com/BhavishyaA516/AuraLint-AI/blob/1dafe89edaa06e7dfe3f299bfc08021f2635f83d/AuraLint1.png)
