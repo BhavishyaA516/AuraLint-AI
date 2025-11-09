@@ -84,7 +84,7 @@ Follow these steps to set up and run the project locally:
 
 # 6.1 Clone the Repository
 Clone the project from GitHub:
-git clone https://github.com/BhavishyaA516/AuraLint_AI.git
+git clone https://github.com/BhavishyaA516/AuraLint-AI.git
 cd AuraLint_AI
 
 # Code Analysis Web Application
